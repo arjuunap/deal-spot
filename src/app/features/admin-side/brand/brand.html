@@ -1,1 +1,76 @@
-<p>brand works!</p>
+<div class="form-container">
+    <h2>Add New Brand</h2>
+
+    <form [formGroup]="brandForm" (ngSubmit)="onSubmit()">
+
+        <div class="input-group">
+            <label for="nameEn">Brand Name (English)</label>
+            <input type="text" id="nameEn" formControlName="nameEn" placeholder="e.g., Samsung">
+        </div>
+
+        <div class="input-group rtl-group" dir="rtl">
+            <label for="nameAr">اسم العلامة التجارية (بالعربية)</label>
+            <input type="text" id="nameAr" formControlName="nameAr" placeholder="مثال: سامسونج">
+        </div>
+
+        <div class="input-group">
+            <label for="descriptionEn">Description (English)</label>
+            <textarea id="descriptionEn" formControlName="descriptionEn" rows="3"
+                placeholder="Enter brand description..."></textarea>
+        </div>
+
+        <div class="input-group rtl-group" dir="rtl">
+            <label for="descriptionAr">الوصف (بالعربية)</label>
+            <textarea id="descriptionAr" formControlName="descriptionAr" rows="3"
+                placeholder="أدخل وصف العلامة التجارية..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="websiteUrl">Website URL</label>
+            <input type="url" id="websiteUrl" formControlName="websiteUrl" placeholder="https://www.samsung.com">
+        </div>
+
+        <div class="input-group">
+            <label for="logoInput">Brand Logo</label>
+            <input type="file" id="logoInput" accept="image/*" (change)="onLogoSelected($event)">
+        </div>
+
+        <div class="input-group">
+            <label for="bannerInput">Brand Banner</label>
+            <input type="file" id="bannerInput" accept="image/*" (change)="onBannerSelected($event)">
+        </div>
+
+        <div class="input-group">
+            <label>Categories</label>
+            <div class="custom-dropdown-container">
+
+                <div class="dropdown-trigger" [class.active]="isCategoryDropdownOpen" (click)="toggleDropdown()">
+                    <span>
+                        {{ brandForm.get('categoryIds')?.value?.length > 0
+                        ? brandForm.get('categoryIds')?.value.length + ' Categories Selected'
+                        : 'Select Categories...' }}
+                    </span>
+                    <span class="arrow" [class.open]="isCategoryDropdownOpen">▼</span>
+                </div>
+
+                <div class="dropdown-menu" *ngIf="isCategoryDropdownOpen">
+                    <label *ngFor="let category of categories" class="checkbox-item">
+                        <input type="checkbox" [checked]="brandForm.get('categoryIds')?.value.includes(category.id)"
+                            (change)="toggleCategory(category.id)">
+                        <span class="checkmark"></span>
+                        {{ category.nameEn }}
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="isSubmitting || brandForm.invalid">
+            {{ isSubmitting ? 'Saving...' : 'Save Brand' }}
+        </button>
+    </form>
+
+    <div *ngIf="statusMessage" id="statusMessage" [ngClass]="statusType">
+        {{ statusMessage }}
+    </div>
+</div>

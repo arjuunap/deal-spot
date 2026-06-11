@@ -81,7 +81,8 @@ export class Category implements OnInit {
       );
 
       if (formValue.image) {
-        formData.append('file', formValue.image);
+        formData.append(
+          'file', formValue.image);
       }
 
       this.categoryService.addCategory(formData).subscribe({

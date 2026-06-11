@@ -1,0 +1,155 @@
+/* Container Styling */
+.form-container {
+    background-color: #161b22; /* Deep modern gray/black */
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #30363d;
+    margin: 2rem auto;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+    margin-bottom: 2rem;
+    font-size: 1.75rem;
+    color: #f0f6fc;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: -0.5px;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 1rem;
+}
+
+/* Input Grouping */
+.input-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.rtl-group {
+    text-align: right;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #8b949e;
+    font-weight: 500;
+}
+
+/* Inputs, Textareas, and Selects */
+input[type="text"],
+input[type="url"],
+textarea,
+select.multi-select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    color: #c9d1d9;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    font-family: inherit;
+}
+
+/* Placeholders */
+input::placeholder,
+textarea::placeholder {
+    color: #484f58;
+}
+
+/* Focus States */
+input:focus,
+textarea:focus,
+select.multi-select:focus {
+    outline: none;
+    border-color: #00ff62; /* Vibrant green focus */
+    box-shadow: 0 0 0 3px rgba(0, 255, 98, 0.15);
+}
+
+/* Textarea specific adjustments */
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Multi-select specific adjustments */
+select.multi-select {
+    padding: 0.5rem;
+    height: 140px;
+}
+
+select.multi-select option {
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #c9d1d9;
+    transition: background-color 0.1s;
+}
+
+select.multi-select option:hover {
+    background-color: #1f242c;
+}
+
+select.multi-select option:checked {
+    background-color: #00ff62;
+    color: #000000;
+    font-weight: 600;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: #00ff62;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background-color: #00cc4f;
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.submit-btn:disabled {
+    background-color: #21262d;
+    color: #484f58;
+    cursor: not-allowed;
+    border: 1px solid #30363d;
+}
+
+/* Status Messages Container */
+#statusMessage {
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.success { 
+    background-color: rgba(0, 255, 98, 0.1);
+    color: #00ff62; 
+    border: 1px solid rgba(0, 255, 98, 0.2);
+}
+
+.error { 
+    background-color: rgba(255, 85, 85, 0.1);
+    color: #ff5555; 
+    border: 1px solid rgba(255, 85, 85, 0.2);
+}
