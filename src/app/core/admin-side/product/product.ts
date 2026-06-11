@@ -14,6 +14,6 @@ export class Product {
   }
 
   getProducts(){
-    return this.http.get(`${this.apiUrl}/fetch-products`);
+    return this.http.get(`${this.apiUrl}/fetch-all-products`);
   }
 }

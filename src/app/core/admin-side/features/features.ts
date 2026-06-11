@@ -11,4 +11,7 @@ export class FeatureService {
   addFeatures(feature:FormData){
     return this.http.post(`${this.apiUrl}/add-key`, feature)
   }
+  getFeatures() {
+  return this.http.get<any[]>(`${this.apiUrl}/fetch-attribute-keys`);
+}
 }
