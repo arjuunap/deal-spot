@@ -1,0 +1,12 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+  background-color: #121212; /* Matches your dark theme */
+}
+
+/* Optional: Good practice to apply border-box to all elements */
+*, *::before, *::after {
+  box-sizing: inherit;
+}

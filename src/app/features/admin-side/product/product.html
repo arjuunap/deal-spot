@@ -1,0 +1,89 @@
+<div class="page-header">
+  <h2>Add New Product</h2>
+  <p>Create a new item for your inventory.</p>
+</div>
+
+<div class="form-card">
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    
+    <div class="form-grid">
+      
+      <div class="input-group">
+        <label>Product Name (English) *</label>
+        <input type="text" formControlName="nameEn" placeholder="e.g., Wireless Mouse">
+      </div>
+
+      <div class="input-group">
+        <label>Product Name (Arabic) *</label>
+        <input type="text" formControlName="nameAr" dir="rtl" placeholder="ماوس لاسلكي">
+      </div>
+
+      <div class="input-group">
+        <label>Brand (English)</label>
+        <input type="text" formControlName="brand" placeholder="e.g., Logitech">
+      </div>
+
+      <div class="input-group">
+        <label>Brand (Arabic)</label>
+        <input type="text" formControlName="brandAr" dir="rtl" placeholder="لوجيتك">
+      </div>
+
+      <div class="input-group">
+        <label>Main Category *</label>
+        <select formControlName="parentCategoryId">
+          <option value="" disabled selected>Select Main Category</option>
+          <option *ngFor="let cat of parentCategories" [value]="cat.id">
+            {{ cat.nameEn }} | {{ cat.nameAr }} 
+          </option>
+        </select>
+      </div>
+
+      <div class="input-group" *ngIf="productForm.get('parentCategoryId')?.value">
+        <label>Sub Category *</label>
+        <select formControlName="categoryId">
+          <option value="" disabled selected>Select Sub Category</option>
+          <option *ngFor="let child of childCategories" [value]="child.id">
+            {{ child.nameEn }} | {{ child.nameAr }} 
+          </option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Unit *</label>
+        <select formControlName="unit">
+          <option *ngFor="let u of productUnits" [value]="u">{{ u }}</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <label>Unit Size *</label>
+        <input type="number" step="any" formControlName="unitSize" placeholder="e.g., 1.5">
+      </div>
+
+      <div class="input-group full-width">
+        <label>Description (English)</label>
+        <textarea formControlName="descriptionEn" rows="4" placeholder="Enter product details..."></textarea>
+      </div>
+
+      <div class="input-group full-width">
+        <label>Description (Arabic)</label>
+        <textarea formControlName="descriptionAr" rows="4" dir="rtl" placeholder="أدخل تفاصيل المنتج..."></textarea>
+      </div>
+
+      <div class="input-group full-width">
+        <label>Primary Image</label>
+    
+        <div class="file-upload-box">
+          <input type="file" (change)="onFileSelected($event)" accept="image/*">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel">Cancel</button>
+      <button type="submit" class="btn-submit" [disabled]="productForm.invalid">Save Product</button>
+    </div>
+
+  </form>
+</div>

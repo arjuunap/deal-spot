@@ -1,0 +1,194 @@
+/* Page Header */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.page-header p {
+  margin: 0;
+  color: #a0a0b5;
+  font-size: 14px;
+}
+
+/* Card Container */
+.form-card {
+  background-color: #1e1e2f;
+  border: 1px solid #2d2d44;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 900px;
+}
+
+/* Grid Layout for Inputs */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+  margin-bottom: 24px;
+}
+
+/* Input Groups */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group select {
+  background-color: #121212;
+  border: 1px solid #2d2d44;
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #00d2ff;
+}
+
+/* File Upload Box */
+.file-upload-box {
+  background-color: #121212;
+  border: 1px dashed #2d2d44;
+  border-radius: 8px;
+  padding: 16px;
+  color: #a0a0b5;
+}
+
+.file-upload-box input {
+  color: #e0e0e0;
+}
+
+/* Custom Toggle Switch for Active Status */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle-label {
+  color: #e0e0e0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #2d2d44;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #00d2ff;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #00d2ff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Form Actions (Buttons) */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #2d2d44;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #a0a0b5;
+  border: 1px solid #2d2d44;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #2a2a40;
+  color: #ffffff;
+}
+
+.btn-submit {
+  background-color: #00d2ff;
+  color: #121212;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #00b8e6;
+}
+
+.btn-submit:disabled {
+  background-color: #2d2d44;
+  color: #888;
+  cursor: not-allowed;
+}

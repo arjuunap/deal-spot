@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h2>Add New Category</h2>
+  <p>Create a new product category for the store.</p>
+</div>
+
+<div class="form-card">
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+    
+    <div class="form-grid">
+      
+      <div class="input-group">
+        <label>Category Name (English) *</label>
+        <input type="text" formControlName="nameEn" placeholder="e.g., Electronics">
+      </div>
+
+      <div class="input-group">
+        <label>Category Name (Arabic) *</label>
+        <input type="text" formControlName="nameAr" dir="rtl" placeholder="الإلكترونيات">
+      </div>
+
+      
+
+      <div class="input-group">
+        <label>Icon (Slug/Class)</label>
+        <input type="text" formControlName="iconslug" placeholder="e.g., fas fa-laptop">
+      </div>
+
+      <div class="input-group">
+        <label>Parent Category</label>
+        <select formControlName="parentId">
+          <option value="">Main Category</option> 
+          <option *ngFor="let cat of categories" [value]="cat.id">
+            {{ cat.nameEn }}
+          </option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Sort Order</label>
+        <input type="number" formControlName="sortOrder" min="0">
+      </div>
+
+    </div>
+
+    <div class="input-group full-width">
+      <label>Category Image</label>
+      <div class="file-upload-box">
+        <input type="file" (change)="onFileSelected($event)" accept="image/*">
+      </div>
+    </div>
+
+    <div class="toggle-container full-width">
+      <label class="switch">
+        <input type="checkbox" formControlName="isActive">
+        <span class="slider round"></span>
+      </label>
+      <span class="toggle-label">Active / Visible on Storefront</span>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel">Cancel</button>
+      <button type="submit" class="btn-submit" [disabled]="categoryForm.invalid">Save Category</button>
+    </div>
+
+  </form>
+</div>

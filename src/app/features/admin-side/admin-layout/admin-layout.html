@@ -1,0 +1,35 @@
+<div class="admin-container dark-theme">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>DEALSPOT</h1>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/admin-side/add-product" routerLinkActive="active-link" class="nav-item">
+        Products
+      </a>
+      <a routerLink="/admin-side/category" routerLinkActive="active-link" class="nav-item">
+        Categories
+      </a>
+      <a routerLink="/admin-side/brand" routerLinkActive="active-link" class="nav-item">
+        Brands
+      </a>
+      <a routerLink="/admin-side/features" routerLinkActive="active-link" class="nav-item">
+        features
+      </a>
+    </nav>
+  </aside>
+
+  <div class="main-workspace">
+    
+    <header class="top-header">
+      <div class="header-title">Admin</div>
+      <button class="logout-btn" (click)="onLogout()">Logout</button>
+    </header>
+
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+    
+  </div>
+</div>

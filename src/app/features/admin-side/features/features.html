@@ -1,0 +1,42 @@
+<div class="form-container">
+  <h2>Add New Feature</h2>
+  
+  <form [formGroup]="featureForm" (ngSubmit)="onSubmit()">
+    
+    <div class="input-group">
+      <label for="attrKeyEn">Feature Name (English)</label>
+      <input 
+        type="text" 
+        id="name_eng" 
+        formControlName="attrKeyEn" 
+        placeholder="e.g., Dark Mode"
+      >
+    </div>
+
+    <div class="input-group rtl-group" dir="rtl">
+      <label for="attrKeyAr">اسم الميزة (بالعربية)</label>
+      <input 
+        type="text" 
+        id="name_arb" 
+        formControlName="attrKeyAr" 
+        placeholder="مثال: الوضع الداكن"
+      >
+    </div>
+
+    <button 
+      type="submit" 
+      class="submit-btn" 
+      [disabled]="isSubmitting"
+    >
+      {{ isSubmitting ? 'Saving...' : 'Save Feature' }}
+    </button>
+  </form>
+
+  <div 
+    *ngIf="statusMessage" 
+    id="statusMessage" 
+    [ngClass]="statusType"
+  >
+    {{ statusMessage }}
+  </div>
+</div>
