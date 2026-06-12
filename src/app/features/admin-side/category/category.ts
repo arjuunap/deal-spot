@@ -15,12 +15,10 @@ export class Category implements OnInit {
   categoryForm!: FormGroup;
 
   // Mock data for the parent category dropdown
-  parentCategories = [
-    { id: 1, name: 'Electronics' },
-    { id: 2, name: 'Fashion' },
-    { id: 3, name: 'Home & Living' }
-  ];
+  parentCategories : any = []
   categories :any = [];
+  allCategories: any[] = [];
+
 
   constructor(private fb: FormBuilder,
     private categoryService: CategoryService,
@@ -43,6 +41,22 @@ export class Category implements OnInit {
       this.categories = data 
       this.cd.detectChanges(); // Ensure the view updates with the new categories
       console.log(this.categories,'categories'); // Adjust based on actual API response structure
+    });
+    this.fetchParentCategories();
+  }
+  fetchParentCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (data: any) => {
+        this.allCategories = data;
+        this.parentCategories = this.allCategories.filter(
+          cat => cat.parentId === null || cat.parentId === undefined
+        );
+        this.cd.detectChanges(); // Update the view with the new parent categories
+        console.log('Parent Categories:', this.parentCategories);
+      },
+      error: err => {
+        console.error('Error loading categories', err);
+      }
     });
   }
 

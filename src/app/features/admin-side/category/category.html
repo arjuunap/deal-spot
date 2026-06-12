@@ -29,8 +29,8 @@
         <label>Parent Category</label>
         <select formControlName="parentId">
           <option value="">Main Category</option> 
-          <option *ngFor="let cat of categories" [value]="cat.id">
-            {{ cat.nameEn }}
+          <option *ngFor="let cat of parentCategories" [value]="cat.id">
+            {{ cat.nameEn }} 
           </option>
         </select>
       </div>
