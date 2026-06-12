@@ -12,7 +12,7 @@ import { CategoryService } from '../../../core/admin-side/category';
 import { Product } from '../../../core/admin-side/product/product';
 import { FeatureService } from '../../../core/admin-side/features/features';
 import { BrandService } from '../../../core/admin-side/brand/brand';
-
+import Swal from 'sweetalert2';
 interface Feature {
   id: number;
   attrKeyEn: string;
@@ -198,7 +198,7 @@ export class AddProduct implements OnInit {
   // SUBMIT
   // =========================
 
-  onSubmit(): void {
+ onSubmit(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
       return;
@@ -209,19 +209,13 @@ export class AddProduct implements OnInit {
     const product = {
       parentCategoryId: Number(formValue.parentCategoryId),
       categoryId: formValue.categoryId ? Number(formValue.categoryId) : null,
-
       nameEn: formValue.nameEn,
       nameAr: formValue.nameAr,
-
       brandId: formValue.brandId ? Number(formValue.brandId) : null,
-
       descriptionEn: formValue.descriptionEn,
       descriptionAr: formValue.descriptionAr,
-
       unit: formValue.unit,
       unitSize: Number(formValue.unitSize),
-
-      // FIX: Map correctly from the form control names to the DTO names
       details: formValue.details.map((detail: any) => ({
         attributeKeyId: Number(detail.attr_key_id),
         attrValueEn: detail.valueEn,
@@ -233,23 +227,25 @@ export class AddProduct implements OnInit {
 
     formData.append(
       'data',
-      new Blob([JSON.stringify(product)], {
-        type: 'application/json'
-      })
+      new Blob([JSON.stringify(product)], { type: 'application/json' })
     );
 
     if (formValue.primaryImage) {
-      formData.append(
-        'file',
-        formValue.primaryImage
-      );
+      formData.append('file', formValue.primaryImage);
     }
 
     console.log('Submitting product:', product);
 
     this.productService.addProduct(formData).subscribe({
       next: () => {
-        alert('Product added successfully');
+        // NEW: Success SweetAlert
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Product added successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        });
 
         this.productForm.reset({
           unit: 'EACH'
@@ -262,9 +258,20 @@ export class AddProduct implements OnInit {
         this.details.clear();
         this.childCategories = [];
       },
-      error: error => {
+      error: (error) => {
         console.error('Error adding product:', error);
-        alert('Failed to add product');
+        
+        // NEW: Extract backend error message gracefully
+        // Note: Adjust 'error.error.message' if your backend sends the error string in a different property (like error.error.error)
+        const backendErrorMessage = error?.error?.message || error?.message || 'Failed to add product.';
+
+        // NEW: Error SweetAlert showing backend message
+        Swal.fire({
+          icon: 'error',
+          title: 'Submission Failed',
+          text: backendErrorMessage,
+          confirmButtonColor: '#d33'
+        });
       }
     });
   }

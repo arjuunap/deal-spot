@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../../core/admin-side/category';
 import { BrandService } from '../../../core/admin-side/brand/brand';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-brand',
@@ -22,6 +23,7 @@ export class Brand implements OnInit {
   isCategoryDropdownOpen = false;
 
   categories: any = [];
+  brands: any = [];
 
   constructor(
     private fb: FormBuilder, 
@@ -52,6 +54,18 @@ export class Brand implements OnInit {
       error: (err) => {
         console.error('Error fetching categories:', err);
       }
+    });
+    this.fetchBrands();
+  }
+  fetchBrands(): void {
+    this.brandService.getBrands().subscribe({
+      next: (data: any) => {
+        console.log('Fetched brands:', data);
+        this.brands = data;
+      },
+      error: (err) => {
+        console.error('Error fetching brands:', err);
+       }
     });
   }
 
@@ -90,14 +104,38 @@ export class Brand implements OnInit {
 
   onSubmit(): void {
     if (this.brandForm.invalid) {
+      // You can keep your existing message or use Swal here too
       this.showMessage('Please fill all required fields correctly.', 'error');
+      this.brandForm.markAllAsTouched();
       return;
     }
 
-    this.isSubmitting = true;
     const formValue = this.brandForm.value;
 
-    // 1. Create the DTO matching your backend expectation
+    // 1. Check for duplicates in the existing brands array
+    const isDuplicate = this.brands.some((brand: any) => {
+      const existingNameEn = brand.nameEn ? brand.nameEn.toLowerCase().trim() : '';
+      const existingNameAr = brand.nameAr ? brand.nameAr.toLowerCase().trim() : '';
+      const newNameEn = formValue.nameEn.toLowerCase().trim();
+      const newNameAr = formValue.nameAr.toLowerCase().trim();
+
+      return existingNameEn === newNameEn || existingNameAr === newNameAr;
+    });
+
+    if (isDuplicate) {
+      // 2. Show SweetAlert Warning for Duplicate
+      Swal.fire({
+        icon: 'warning',
+        title: 'Duplicate Brand',
+        text: 'A brand with this English or Arabic name already exists!',
+        confirmButtonColor: '#3085d6'
+      });
+      return; // Stop the submission
+    }
+
+    this.isSubmitting = true;
+
+    // 3. Create the DTO matching your backend expectation
     const brandDto = {
       nameEn: formValue.nameEn,
       nameAr: formValue.nameAr,
@@ -107,16 +145,16 @@ export class Brand implements OnInit {
       categoryIds: formValue.categoryIds
     };
 
-    // 2. Initialize FormData
+    // 4. Initialize FormData
     const formData = new FormData();
 
-    // 3. Append the DTO as a JSON Blob to the 'data' part
+    // 5. Append the DTO as a JSON Blob to the 'data' part
     formData.append(
       'data',
       new Blob([JSON.stringify(brandDto)], { type: 'application/json' })
     );
 
-    // 4. Append files to their respective parts if they exist
+    // 6. Append files to their respective parts if they exist
     if (formValue.logoFile) {
       formData.append('logoFile', formValue.logoFile);
     }
@@ -125,13 +163,24 @@ export class Brand implements OnInit {
       formData.append('bannerFile', formValue.bannerFile);
     }
 
-    // 5. Send the FormData payload via your service
+    // 7. Send the FormData payload via your service
     this.brandService.addBrand(formData).subscribe({
       next: (res) => {
         console.log('Brand added successfully!', res);
-        this.showMessage('Brand added successfully!', 'success');
         
-        // Reset the form, explicitly clearing the arrays and files
+        // Success SweetAlert
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Brand added successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        // Add the new brand to our local array so the duplicate check works immediately
+        this.brands.push(brandDto);
+        
+        // Reset the form
         this.brandForm.reset({ 
           categoryIds: [], 
           logoFile: null, 
@@ -143,7 +192,15 @@ export class Brand implements OnInit {
       },
       error: (err) => {
         console.error('Error adding brand:', err);
-        this.showMessage('Failed to add brand. Check console.', 'error');
+        
+        // Error SweetAlert
+        Swal.fire({
+          icon: 'error',
+          title: 'Submission Failed',
+          text: 'Something went wrong while adding the brand. Please try again.',
+          confirmButtonColor: '#d33'
+        });
+        
         this.isSubmitting = false;
       }
     });
