@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
+import { environment } from '../../../../environment/environment';
 @Injectable({
   providedIn: 'root',
 })
 export class Product {
-  private apiUrl = 'http://192.168.0.246:8080/api/dealspot/products';
+  private apiUrl = environment.apiUrl + '/products';
   constructor(private http: HttpClient) { }
 
 
