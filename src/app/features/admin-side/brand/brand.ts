@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { CategoryService } from '../../../core/admin-side/category';
-import { BrandService } from '../../../core/admin-side/brand/brand';
 import Swal from 'sweetalert2';
+import { CategoryService } from '../../../core/admin-side/Services/categoryService/category';
+import { BrandService } from '../../../core/admin-side/Services/brand/brand';
 
 @Component({
   selector: 'app-add-brand',
@@ -40,7 +40,6 @@ export class Brand implements OnInit {
       descriptionAr: ['', Validators.required],
       websiteUrl: ['', [Validators.pattern('https?://.+')]],
       categoryIds: [[], Validators.required],
-      // Add form controls for the files
       logoFile: [null],
       bannerFile: [null]
     });

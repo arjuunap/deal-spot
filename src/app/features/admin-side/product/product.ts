@@ -8,11 +8,10 @@ import {
   Validators
 } from '@angular/forms';
 
-import { CategoryService } from '../../../core/admin-side/category';
-import { Product } from '../../../core/admin-side/product/product';
-import { FeatureService } from '../../../core/admin-side/features/features';
-import { BrandService } from '../../../core/admin-side/brand/brand';
 import Swal from 'sweetalert2';
+import { CategoryService } from '../../../core/admin-side/Services/categoryService/category';
+import {  ProductService } from '../../../core/admin-side/Services/product/product';
+import { BrandService } from '../../../core/admin-side/Services/brand/brand';
 interface Feature {
   id: number;
   attrKeyEn: string;
@@ -44,8 +43,7 @@ export class AddProduct implements OnInit {
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
-    private productService: Product,
-    private featureService: FeatureService,
+    private productService: ProductService,
     private brandService: BrandService,
     private cd: ChangeDetectorRef
   ) { }
@@ -165,7 +163,7 @@ export class AddProduct implements OnInit {
   // =========================
 
   fetchFeatures(): void {
-    this.featureService.getFeatures().subscribe({
+    this.productService.getFeatures().subscribe({
       next: (data: Feature[]) => {
         this.allFeatures = data;
       },

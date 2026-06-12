@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CategoryService } from '../../../core/admin-side/category';
+// import { CategoryService } from '../../../core/admin-side/category';
 import Swal from 'sweetalert2';
+import { CategoryService } from '../../../core/admin-side/Services/categoryService/category';
 
 @Component({
   selector: 'app-add-category',

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FeatureService } from '../../../core/admin-side/features/features';
 import Swal from 'sweetalert2';
+import { ProductService } from '../../../core/admin-side/Services/product/product';
 @Component({
   selector: 'app-add-feature',
   standalone: true,
@@ -19,7 +19,7 @@ export class Feature {
   features: any = [];
 
   constructor(private fb: FormBuilder, private http: HttpClient,
-    private featureService : FeatureService
+    private productFeatureService: ProductService
   ) {
     // Initialize the Reactive Form with validation rules
     this.featureForm = this.fb.group({
@@ -31,7 +31,7 @@ export class Feature {
     this.fetchFeatures();
   }
   fetchFeatures(): void {
-    this.featureService.getFeatures().subscribe({
+    this.productFeatureService.getFeatures().subscribe({
       next: (data: any) => {
         this.features = data;
         console.log('Fetched Features:', this.features);
@@ -87,7 +87,7 @@ export class Feature {
     const payload = this.featureForm.value;
 
     // 4. Execute the POST request
-    this.featureService.addFeatures(payload).subscribe({
+    this.productFeatureService.addFeatures(payload).subscribe({
       next: (response) => {
         console.log('Success', response);
 
