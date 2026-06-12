@@ -1,0 +1,52 @@
+<div class="list-container">
+  <div class="header-actions">
+    <h2>Product Inventory</h2>
+    <button class="btn-add" routerLink="/admin/products/add">+ Add New Product</button>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <p>Loading products...</p>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && products.length === 0">
+    <p>No products found. Start by adding a new one!</p>
+  </div>
+
+  <div class="table-responsive" *ngIf="!isLoading && products.length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Image</th>
+          <th>Name (EN)</th>
+          <th>Unit</th>
+          <th>Size</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>#{{ product.id }}</td>
+          <td>
+            <img 
+              [src]="path+product.images[0].imageUrl" 
+              alt="Product Image" 
+              class="product-img"
+            />
+          </td>
+          <td class="fw-bold">{{ product.nameEn }}</td>
+          <td>{{ product.unit }}</td>
+          <td>{{ product.unitSize }}</td>
+          <td class="action-buttons">
+            <button class="btn-edit" (click)="onEdit(product.id)">
+              <i class="icon-edit">✎</i> Edit
+            </button>
+            <!-- <button class="btn-delete" (click)="onDelete(product.id, product.nameEn)">
+              <i class="icon-delete">🗑</i> Delete
+            </button> -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
