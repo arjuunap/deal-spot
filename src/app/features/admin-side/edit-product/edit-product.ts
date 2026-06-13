@@ -7,13 +7,13 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
 import { CategoryService } from '../../../core/admin-side/Services/categoryService/category';
-import {  ProductService } from '../../../core/admin-side/Services/product/product';
+import { ProductService } from '../../../core/admin-side/Services/product/product';
 import { BrandService } from '../../../core/admin-side/Services/brand/brand';
-import { ProductList } from "../product-list/product-list";
-import { Router } from '@angular/router';
+import { environment } from '../../../../environment/environment';
 
 interface Feature {
   id: number;
@@ -22,15 +22,16 @@ interface Feature {
 }
 
 @Component({
-  selector: 'app-add-product',
+  selector: 'app-edit-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ProductList],
-  templateUrl: './product.html',
-  styleUrls: ['./product.css']
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './edit-product.html',
+  styleUrls: ['./edit-product.css']
 })
-export class AddProduct implements OnInit {
+export class EditProduct implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   productForm!: FormGroup;
+  productId!: number;
 
   productUnits = [
     'EACH', 'KG', 'GRAM', 'LITRE', 'ML', 'PACK', 'BOX', 'PAIR', 'SET'
@@ -42,6 +43,10 @@ export class AddProduct implements OnInit {
 
   allFeatures: Feature[] = [];
   brands: any = [];
+  id: string = ''
+  imagePreview: any;
+    path: string =  environment.filePath; ;
+
 
   constructor(
     private fb: FormBuilder,
@@ -49,29 +54,26 @@ export class AddProduct implements OnInit {
     private productService: ProductService,
     private brandService: BrandService,
     private cd: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute // Added ActivatedRoute to get the product ID
+
   ) { }
 
   ngOnInit(): void {
+    const productId = this.route.snapshot.paramMap.get('productId');
+
+    console.log(productId);
     this.productForm = this.fb.group({
       parentCategoryId: [null, Validators.required],
       categoryId: [null, Validators.required],
       nameEn: ['', Validators.required],
       nameAr: ['', Validators.required],
-
       brandId: [null],
-
       descriptionEn: [''],
       descriptionAr: [''],
-
       unit: ['EACH', Validators.required],
-      unitSize: [
-        null,
-        [Validators.required, Validators.min(0.01)]
-      ],
-
+      unitSize: [null, [Validators.required, Validators.min(0.01)]],
       primaryImage: [null],
-
       details: this.fb.array([])
     });
 
@@ -84,10 +86,65 @@ export class AddProduct implements OnInit {
     this.fetchCategories();
     this.fetchFeatures();
     this.fetchBrands();
-    this.productService.getProducts().subscribe({
-      next: (data) => {
-        console.log('Fetched products:', data);
-      }});
+
+    // Fetch the product ID from the route and load existing data
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('productId');
+      if (id) {
+        this.productId = Number(id);
+        this.loadProductData(this.productId);
+      }
+    });
+  }
+
+  loadProductData(id: number): void {
+    // Note: Ensure getProductById exists in your ProductService
+    this.productService.getProductById(id).subscribe({
+      next: (product: any) => {
+        console.log('Fetched product:', product);
+        this.imagePreview = product.images[0].imageUrl
+        console.log(this.imagePreview)
+
+
+        // Populate child categories if parent category exists
+        if (product.parentCategoryId) {
+          this.onParentCategoryChange(product.parentCategoryId);
+        }
+
+        // Patch the standard form controls
+        this.productForm.patchValue({
+          parentCategoryId: product.parentCategoryId,
+          categoryId: product.categoryId,
+          nameEn: product.nameEn,
+          nameAr: product.nameAr,
+          brandId: product.brandId,
+          descriptionEn: product.descriptionEn,
+          descriptionAr: product.descriptionAr,
+          unit: product.unit,
+          unitSize: product.unitSize,
+
+
+
+        });
+
+        // Clear existing empty details and populate with fetched details
+        this.details.clear();
+        if (product.details && product.details.length > 0) {
+          product.details.forEach((detail: any) => {
+            this.details.push(this.fb.group({
+              // Fallbacks used depending on your backend GET response property names
+              attr_key_id: [detail.attributeKeyId || detail.attr_key_id, Validators.required],
+              valueEn: [detail.attrValueEn || detail.valueEn, Validators.required],
+              valueAr: [detail.attrValueAr || detail.valueAr, Validators.required]
+            }));
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading product details', err);
+        Swal.fire('Error', 'Failed to load product data', 'error');
+      }
+    });
   }
 
   fetchBrands(): void {
@@ -109,7 +166,6 @@ export class AddProduct implements OnInit {
 
   createDetailGroup(): FormGroup {
     return this.fb.group({
-      // These are the names of your form controls
       attr_key_id: [null, Validators.required],
       valueEn: ['', Validators.required],
       valueAr: ['', Validators.required]
@@ -144,7 +200,11 @@ export class AddProduct implements OnInit {
 
   onParentCategoryChange(parentId: any): void {
     const categoryIdControl = this.productForm.get('categoryId');
-    categoryIdControl?.setValue(null);
+
+    // Only clear if the parentId actually changes to a different value to avoid wiping data during initialization patch
+    if (this.productForm.value.parentCategoryId !== parentId) {
+      categoryIdControl?.setValue(null);
+    }
 
     if (parentId) {
       this.childCategories = this.allCategories.filter(
@@ -200,7 +260,7 @@ export class AddProduct implements OnInit {
   // SUBMIT
   // =========================
 
- onSubmit(): void {
+  onSubmit(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
       return;
@@ -236,43 +296,27 @@ export class AddProduct implements OnInit {
       formData.append('file', formValue.primaryImage);
     }
 
-    console.log('Submitting product:', product);
-
-    this.productService.addProduct(formData).subscribe({
-      next: () => {
-        // NEW: Success SweetAlert
+    // Note: Ensure updateProduct exists in your ProductService
+    this.productService.updateProduct(this.productId, formData).subscribe({
+      next: (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Success!',
-          text: 'Product added successfully.',
+          title: 'Updated!',
+          text: 'Product updated successfully.',
           timer: 2000,
           showConfirmButton: false
         });
-        this.cd.detectChanges();
+        console.log('res', res)
 
-        this.productForm.reset({
-          unit: 'EACH'
-        });
 
-        if (this.fileInput) {
-          this.fileInput.nativeElement.value = '';
-        }
-
-        this.details.clear();
-        this.childCategories = [];
-        this.cd.detectChanges();
       },
       error: (error) => {
-        console.error('Error adding product:', error);
-        
-        // NEW: Extract backend error message gracefully
-        // Note: Adjust 'error.error.message' if your backend sends the error string in a different property (like error.error.error)
-        const backendErrorMessage = error?.error?.message || error?.message || 'Failed to add product.';
+        console.error('Error updating product:', error);
+        const backendErrorMessage = error?.error?.message || error?.message || 'Failed to update product.';
 
-        // NEW: Error SweetAlert showing backend message
         Swal.fire({
           icon: 'error',
-          title: 'Submission Failed',
+          title: 'Update Failed',
           text: backendErrorMessage,
           confirmButtonColor: '#d33'
         });
@@ -281,13 +325,7 @@ export class AddProduct implements OnInit {
   }
 
   onCancel(): void {
-    this.productForm.reset({
-      unit: 'EACH'
-    });
-    if (this.fileInput) {
-      this.fileInput.nativeElement.value = '';
-    }
-    this.details.clear();
-    this.childCategories = [];
+    // Navigate back to the product list or previous page
+    this.router.navigate(['/admin/products']);
   }
 }

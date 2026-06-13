@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit,Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -17,6 +17,9 @@ export class ProductList implements OnInit {
   isLoading: boolean = true;
   path: string =  environment.filePath; ;
 
+    @Input() hideAddButton = false;
+
+
   constructor(
     private productService: ProductService,
     private router: Router,
@@ -34,9 +37,9 @@ export class ProductList implements OnInit {
     this.productService.getProducts().subscribe({
       next: (data: any) => {
         this.products = data;
+        console.log('Products fetched successfully:', this.products);
         this.isLoading = false;
-        this.cd.detectChanges(); // Ensure the view updates with the new products
-        console.log('Products loaded:', this.products);
+        this.cd.detectChanges();
       },
       error: (error) => {
         console.error('Error fetching products', error);
@@ -45,17 +48,17 @@ export class ProductList implements OnInit {
           icon: 'error',
           title: 'Oops...',
           text: 'Failed to load products from the server.',
-          confirmButtonColor: '#d33'
+          confirmButtonColor: '#d33',
+          
         });
       }
     });
   }
 
   // Navigate to the edit route (e.g., /admin/products/edit/123)
-  onEdit(productId: number): void {
-    // Adjust this route based on your actual routing setup
-    this.router.navigate(['/admin/products/edit', productId]);
-  }
+onEdit(productId: number): void {
+  this.router.navigate(['/admin-side/edit-product', productId]);
+}
 
   // Delete with SweetAlert Confirmation
   // onDelete(productId: number, productName: string): void {

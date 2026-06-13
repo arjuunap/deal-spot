@@ -4,7 +4,9 @@
 </div>
 
 <div class="form-card">
-  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+  <div class="form-section">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
 
     <div class="form-grid">
 
@@ -122,4 +124,11 @@
     </div>
 
   </form>
+  </div>
+  <div class="list-section">
+  <app-product-list [hideAddButton]="true"></app-product-list>
 </div>
+  
+  
+</div>
+

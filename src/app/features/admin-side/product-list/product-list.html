@@ -1,7 +1,8 @@
 <div class="list-container">
   <div class="header-actions">
     <h2>Product Inventory</h2>
-    <button class="btn-add" routerLink="/admin/products/add">+ Add New Product</button>
+    <button   *ngIf="!hideAddButton"
+ class="btn-add" routerLink="/admin/products/add">+ Add New Product</button>
   </div>
 
   <div class="loading-state" *ngIf="isLoading">
@@ -18,10 +19,12 @@
         <tr>
           <th>ID</th>
           <th>Image</th>
-          <th>Name (EN)</th>
+          <th>Name (EN)|(AR)</th>
           <th>Unit</th>
           <th>Size</th>
           <th>Actions</th>
+          
+          
         </tr>
       </thead>
       <tbody>
@@ -34,7 +37,7 @@
               class="product-img"
             />
           </td>
-          <td class="fw-bold">{{ product.nameEn }}</td>
+          <td class="fw-bold">{{ product.nameEn }}  | {{product.nameAr}}</td>
           <td>{{ product.unit }}</td>
           <td>{{ product.unitSize }}</td>
           <td class="action-buttons">
@@ -44,6 +47,8 @@
             <!-- <button class="btn-delete" (click)="onDelete(product.id, product.nameEn)">
               <i class="icon-delete">🗑</i> Delete
             </button> -->
+
+
           </td>
         </tr>
       </tbody>
