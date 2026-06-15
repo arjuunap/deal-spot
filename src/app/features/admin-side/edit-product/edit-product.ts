@@ -112,7 +112,7 @@ export class EditProduct implements OnInit {
         }
 
         // Patch the standard form controls
-        this.productForm.patchValue({
+        this.productForm.patchValue({  
           parentCategoryId: product.parentCategoryId,
           categoryId: product.categoryId,
           nameEn: product.nameEn,
