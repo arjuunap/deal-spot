@@ -30,5 +30,8 @@ export class ProductService {
   getFeatures() {
     return this.http.get<any[]>(`${this.apiUrl}/fetch-attribute-keys`);
   }
+  deleteFeature(featureId: number) {
+    return this.http.delete(`${this.apiUrl}/delete-attribute-key/${featureId}`);
+  }
 
 }

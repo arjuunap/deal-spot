@@ -1,0 +1,183 @@
+/* Main Card Container */
+.inventory-card {
+  background-color: #1e1e2d; 
+  border-radius: 8px;
+  padding: 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  margin: 1rem;
+}
+
+/* Header Styles */
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.inventory-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* Add Button */
+.btn-add {
+  background-color: #009ef7; 
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-add:hover {
+  background-color: #008be1;
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+/* Table Headers */
+.inventory-table th {
+  color: #a1a5b7; 
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1rem 0.5rem;
+  border-bottom: 1px solid #323248; 
+  letter-spacing: 0.5px;
+}
+
+/* Table Rows & Cells */
+.inventory-table td {
+  padding: 1.2rem 0.5rem;
+  border-bottom: 1px solid #323248;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.inventory-table tr:last-child td {
+  border-bottom: none;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-highlight {
+  color: #e2e8f0;
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Edit Button (Green) */
+.btn-edit-action {
+  background-color: rgba(80, 205, 137, 0.1); 
+  color: #50cd89; 
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-action:hover {
+  background-color: rgba(80, 205, 137, 0.2);
+}
+
+/* Delete Button (Red) */
+.btn-delete-action {
+  background-color: rgba(241, 65, 108, 0.1); 
+  color: #f1416c; 
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-action:hover {
+  background-color: rgba(241, 65, 108, 0.2);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem !important;
+  color: #a1a5b7;
+  font-style: italic;
+}
+
+.search-container {
+  position: relative;
+  width: 350px;
+  margin-bottom: 20px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8b92b7;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px 0 42px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.search-input::placeholder {
+  color: #8b92b7;
+}
+
+.search-input:hover {
+  border-color: rgba(255,255,255,0.25);
+}
+
+.search-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+  background: rgba(255,255,255,0.08);
+}
