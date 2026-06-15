@@ -26,8 +26,7 @@ export class Brand implements OnInit {
   brands: any = [];
 
   constructor(
-    private fb: FormBuilder, 
-    private http: HttpClient,
+    private fb: FormBuilder,
     private categoryService: CategoryService,
     private brandService: BrandService
   ) { }
@@ -36,8 +35,8 @@ export class Brand implements OnInit {
     this.brandForm = this.fb.group({
       nameEn: ['', Validators.required],
       nameAr: ['', Validators.required],
-      descriptionEn: ['', Validators.required],
-      descriptionAr: ['', Validators.required],
+      descriptionEn: ['',],
+      descriptionAr: ['',],
       websiteUrl: ['', [Validators.pattern('https?://.+')]],
       categoryIds: [[], Validators.required],
       logoFile: [null],
