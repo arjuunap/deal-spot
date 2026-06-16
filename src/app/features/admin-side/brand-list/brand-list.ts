@@ -33,10 +33,22 @@ export class BrandList {
         console.error('Error fetching brands:', err);
       }
     });
-  }
+  } 
   addBrand(){
     this.router.navigate(['/admin-side/brand']);
 
+  }
+  deleteBrand(brandId: number): void {
+    this.brandService.deleteBrand(brandId).subscribe({
+      next: () => {
+        console.log('Brand deleted successfully');
+        this.fetchBrands();
+        
+      },
+      error: (err) => { 
+        console.error('Error deleting brand:', err);
+      }
+    });
   }
   
 }

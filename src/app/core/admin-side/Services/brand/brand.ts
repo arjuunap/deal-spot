@@ -16,6 +16,9 @@ export class BrandService {
   getBrands(){
     return this.http.get(`${this.apiUrl}/fetch-brands`);
   }
+  deleteBrand(brandId: number) {
+    return this.http.delete(`${this.apiUrl}/delete-brand/${brandId}`);
+  }
 
 
   

@@ -82,14 +82,36 @@
 
 /* Image Thumbnail Styles */
 .image-wrapper {
-  width: 45px;
-  height: 45px;
-  border-radius: 6px;
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
   overflow: hidden;
-  background-color: #ffffff; /* White background for the image like the screenshot */
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.brands-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Shows entire logo */
+  padding: 6px;
+}
+
+.placeholder-img {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  color: #888;
+  background: #f3f4f6;
 }
 
 .product-thumbnail {
@@ -129,4 +151,22 @@
   text-align: center;
   padding: 2rem !important;
   color: #a1a5b7;
+}
+.btn-delete-action {
+  background-color: rgba(241, 65, 108, 0.1); 
+  color: #f1416c; 
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-action:hover {
+  background-color: rgba(241, 65, 108, 0.2);
 }
