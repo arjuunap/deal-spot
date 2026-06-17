@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+
 import { CategoryService } from '../../../core/admin-side/Services/categoryService/category';
 import { BrandService } from '../../../core/admin-side/Services/brand/brand';
 
@@ -14,29 +14,33 @@ import { BrandService } from '../../../core/admin-side/Services/brand/brand';
   styleUrls: ['./brand.css']
 })
 export class Brand implements OnInit {
+
   brandForm!: FormGroup;
   isSubmitting = false;
+
   statusMessage = '';
   statusType: 'success' | 'error' | '' = '';
 
-  // Custom dropdown state
   isCategoryDropdownOpen = false;
 
-  categories: any = [];
-  brands: any = [];
+  categories: any[] = [];
+  brands: any[] = [];
+
+  @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('bannerInput') bannerInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private fb: FormBuilder,
     private categoryService: CategoryService,
     private brandService: BrandService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.brandForm = this.fb.group({
       nameEn: ['', Validators.required],
       nameAr: ['', Validators.required],
-      descriptionEn: ['',],
-      descriptionAr: ['',],
+      descriptionEn: [''],
+      descriptionAr: [''],
       websiteUrl: ['', [Validators.pattern('https?://.+')]],
       categoryIds: [[], Validators.required],
       logoFile: [null],
@@ -45,16 +49,20 @@ export class Brand implements OnInit {
 
     this.categoryService.getCategories().subscribe({
       next: (data: any) => {
-        // .filter() loops through the array and keeps only items where parentId is null
-        this.categories = data.filter((category: any) => category.parentId === null);
+        this.categories = data.filter(
+          (category: any) => category.parentId === null
+        );
+
         console.log('Filtered parent categories:', this.categories);
       },
       error: (err) => {
         console.error('Error fetching categories:', err);
       }
     });
+
     this.fetchBrands();
   }
+
   fetchBrands(): void {
     this.brandService.getBrands().subscribe({
       next: (data: any) => {
@@ -63,25 +71,29 @@ export class Brand implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching brands:', err);
-       }
+      }
     });
   }
 
-  // --- File Selection Handlers ---
   onLogoSelected(event: any): void {
     const file: File = event.target.files[0];
+
     if (file) {
-      this.brandForm.patchValue({ logoFile: file });
+      this.brandForm.patchValue({
+        logoFile: file
+      });
     }
   }
 
   onBannerSelected(event: any): void {
     const file: File = event.target.files[0];
+
     if (file) {
-      this.brandForm.patchValue({ bannerFile: file });
+      this.brandForm.patchValue({
+        bannerFile: file
+      });
     }
   }
-  // -------------------------------
 
   toggleDropdown(): void {
     this.isCategoryDropdownOpen = !this.isCategoryDropdownOpen;
@@ -92,48 +104,68 @@ export class Brand implements OnInit {
     const currentValues = categoryControl?.value as number[];
 
     if (currentValues.includes(categoryId)) {
-      // Remove it if it's already selected
-      categoryControl?.setValue(currentValues.filter(id => id !== categoryId));
+      categoryControl?.setValue(
+        currentValues.filter(id => id !== categoryId)
+      );
     } else {
-      // Add it if it's not selected
-      categoryControl?.setValue([...currentValues, categoryId]);
+      categoryControl?.setValue([
+        ...currentValues,
+        categoryId
+      ]);
     }
   }
 
   onSubmit(): void {
+
     if (this.brandForm.invalid) {
-      // You can keep your existing message or use Swal here too
-      this.showMessage('Please fill all required fields correctly.', 'error');
+      this.showMessage(
+        'Please fill all required fields correctly.',
+        'error'
+      );
+
       this.brandForm.markAllAsTouched();
       return;
     }
 
     const formValue = this.brandForm.value;
 
-    // 1. Check for duplicates in the existing brands array
     const isDuplicate = this.brands.some((brand: any) => {
-      const existingNameEn = brand.nameEn ? brand.nameEn.toLowerCase().trim() : '';
-      const existingNameAr = brand.nameAr ? brand.nameAr.toLowerCase().trim() : '';
-      const newNameEn = formValue.nameEn.toLowerCase().trim();
-      const newNameAr = formValue.nameAr.toLowerCase().trim();
 
-      return existingNameEn === newNameEn || existingNameAr === newNameAr;
+      const existingNameEn = brand.nameEn
+        ? brand.nameEn.toLowerCase().trim()
+        : '';
+
+      const existingNameAr = brand.nameAr
+        ? brand.nameAr.toLowerCase().trim()
+        : '';
+
+      const newNameEn = formValue.nameEn
+        .toLowerCase()
+        .trim();
+
+      const newNameAr = formValue.nameAr
+        .toLowerCase()
+        .trim();
+
+      return (
+        existingNameEn === newNameEn ||
+        existingNameAr === newNameAr
+      );
     });
 
     if (isDuplicate) {
-      // 2. Show SweetAlert Warning for Duplicate
       Swal.fire({
         icon: 'warning',
         title: 'Duplicate Brand',
         text: 'A brand with this English or Arabic name already exists!',
         confirmButtonColor: '#3085d6'
       });
-      return; // Stop the submission
+
+      return;
     }
 
     this.isSubmitting = true;
 
-    // 3. Create the DTO matching your backend expectation
     const brandDto = {
       nameEn: formValue.nameEn,
       nameAr: formValue.nameAr,
@@ -143,30 +175,35 @@ export class Brand implements OnInit {
       categoryIds: formValue.categoryIds
     };
 
-    // 4. Initialize FormData
     const formData = new FormData();
 
-    // 5. Append the DTO as a JSON Blob to the 'data' part
     formData.append(
       'data',
-      new Blob([JSON.stringify(brandDto)], { type: 'application/json' })
+      new Blob(
+        [JSON.stringify(brandDto)],
+        { type: 'application/json' }
+      )
     );
 
-    // 6. Append files to their respective parts if they exist
     if (formValue.logoFile) {
-      formData.append('logoFile', formValue.logoFile);
-    }
-    
-    if (formValue.bannerFile) {
-      formData.append('bannerFile', formValue.bannerFile);
+      formData.append(
+        'logoFile',
+        formValue.logoFile
+      );
     }
 
-    // 7. Send the FormData payload via your service
+    if (formValue.bannerFile) {
+      formData.append(
+        'bannerFile',
+        formValue.bannerFile
+      );
+    }
+
     this.brandService.addBrand(formData).subscribe({
       next: (res) => {
+
         console.log('Brand added successfully!', res);
-        
-        // Success SweetAlert
+
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -175,38 +212,55 @@ export class Brand implements OnInit {
           showConfirmButton: false
         });
 
-        // Add the new brand to our local array so the duplicate check works immediately
         this.brands.push(brandDto);
-        
-        // Reset the form
-        this.brandForm.reset({ 
-          categoryIds: [], 
-          logoFile: null, 
-          bannerFile: null 
-        }); 
-        
-        this.isSubmitting = false;
+
+        this.brandForm.reset({
+          nameEn: '',
+          nameAr: '',
+          descriptionEn: '',
+          descriptionAr: '',
+          websiteUrl: '',
+          categoryIds: [],
+          logoFile: null,
+          bannerFile: null
+        });
+
+        if (this.logoInput) {
+          this.logoInput.nativeElement.value = '';
+        }
+
+        if (this.bannerInput) {
+          this.bannerInput.nativeElement.value = '';
+        }
+
         this.isCategoryDropdownOpen = false;
+        this.isSubmitting = false;
       },
+
       error: (err) => {
+
         console.error('Error adding brand:', err);
-        
-        // Error SweetAlert
+
         Swal.fire({
           icon: 'error',
           title: 'Submission Failed',
           text: 'Something went wrong while adding the brand. Please try again.',
           confirmButtonColor: '#d33'
         });
-        
+
         this.isSubmitting = false;
       }
     });
   }
 
-  private showMessage(msg: string, type: 'success' | 'error'): void {
+  private showMessage(
+    msg: string,
+    type: 'success' | 'error'
+  ): void {
+
     this.statusMessage = msg;
     this.statusType = type;
+
     setTimeout(() => {
       this.statusMessage = '';
       this.statusType = '';
