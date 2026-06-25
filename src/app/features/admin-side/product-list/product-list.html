@@ -1,8 +1,7 @@
 <div class="list-container">
   <div class="header-actions">
     <h2>Product Inventory</h2>
-    <button   *ngIf="!hideAddButton"
- class="btn-add" routerLink="/admin/products/add">+ Add New Product</button>
+    <button *ngIf="!hideAddButton" class="btn-add" routerLink="/admin/products/add">+ Add New Product</button>
   </div>
 
   <div class="loading-state" *ngIf="isLoading">
@@ -23,21 +22,23 @@
           <th>Unit</th>
           <th>Size</th>
           <th>Actions</th>
-          
-          
+
+
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let product of products">
           <td>#{{ product.id }}</td>
           <td>
-            <img 
-              [src]="path+product.images[0].imageUrl" 
-              alt="Product Image" 
-              class="product-img"
-            />
+            <ng-container *ngIf="product.images?.length > 0 && product.images[0]?.imageUrl; else noImage">
+              <img [src]="path + product.images[0].imageUrl" alt="Product Image" class="product-img" />
+            </ng-container>
+
+            <ng-template #noImage>
+              <span>No Image</span>
+            </ng-template>
           </td>
-          <td class="fw-bold">{{ product.nameEn }}  | {{product.nameAr}}</td>
+          <td class="fw-bold">{{ product.nameEn }} | {{product.nameAr}}</td>
           <td>{{ product.unit }}</td>
           <td>{{ product.unitSize }}</td>
           <td class="action-buttons">

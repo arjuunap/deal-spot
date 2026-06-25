@@ -10,7 +10,7 @@ import {
 
 import Swal from 'sweetalert2';
 import { CategoryService } from '../../../core/admin-side/Services/categoryService/category';
-import {  ProductService } from '../../../core/admin-side/Services/product/product';
+import { ProductService } from '../../../core/admin-side/Services/product/product';
 import { BrandService } from '../../../core/admin-side/Services/brand/brand';
 import { ProductList } from "../product-list/product-list";
 import { Router } from '@angular/router';
@@ -30,6 +30,8 @@ interface Feature {
 })
 export class AddProduct implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('brandInput') brandInput!: ElementRef; // <--- ADD THIS
+  @ViewChild(ProductList) productListComponent!: ProductList;
   productForm!: FormGroup;
 
   productUnits = [
@@ -42,6 +44,7 @@ export class AddProduct implements OnInit {
 
   allFeatures: Feature[] = [];
   brands: any = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -87,7 +90,8 @@ export class AddProduct implements OnInit {
     this.productService.getProducts().subscribe({
       next: (data) => {
         console.log('Fetched products:', data);
-      }});
+      }
+    });
   }
 
   fetchBrands(): void {
@@ -97,6 +101,24 @@ export class AddProduct implements OnInit {
         this.cd.detectChanges();
       }
     });
+  }
+
+  // =========================
+  // BRAND SELECTION (DATALIST)
+  // =========================
+  onBrandSelected(event: any): void {
+    const selectedText = event.target.value;
+
+    // Find the brand that matches the text the user clicked/typed
+    const matchingBrand = this.brands.find((b: any) => b.nameEn === selectedText);
+
+    if (matchingBrand) {
+      // Save the ID to the form
+      this.productForm.get('brandId')?.setValue(matchingBrand.id);
+    } else {
+      // Clear the ID if they type something invalid
+      this.productForm.get('brandId')?.setValue(null);
+    }
   }
 
   // =========================
@@ -200,7 +222,7 @@ export class AddProduct implements OnInit {
   // SUBMIT
   // =========================
 
- onSubmit(): void {
+  onSubmit(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
       return;
@@ -247,7 +269,12 @@ export class AddProduct implements OnInit {
           text: 'Product added successfully.',
           timer: 2000,
           showConfirmButton: false
-        });
+        }).then(() => {
+          if (this.productListComponent) {
+
+            this.productListComponent.fetchProducts();
+          }
+        });;
         this.cd.detectChanges();
 
         this.productForm.reset({
@@ -258,13 +285,17 @@ export class AddProduct implements OnInit {
           this.fileInput.nativeElement.value = '';
         }
 
+        if (this.brandInput) {
+          this.brandInput.nativeElement.value = '';
+        }
+
         this.details.clear();
         this.childCategories = [];
         this.cd.detectChanges();
       },
       error: (error) => {
         console.error('Error adding product:', error);
-        
+
         // NEW: Extract backend error message gracefully
         // Note: Adjust 'error.error.message' if your backend sends the error string in a different property (like error.error.error)
         const backendErrorMessage = error?.error?.message || error?.message || 'Failed to add product.';
@@ -280,12 +311,17 @@ export class AddProduct implements OnInit {
     });
   }
 
+
+
   onCancel(): void {
     this.productForm.reset({
       unit: 'EACH'
     });
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
+    }
+    if (this.brandInput) {
+      this.brandInput.nativeElement.value = '';
     }
     this.details.clear();
     this.childCategories = [];
