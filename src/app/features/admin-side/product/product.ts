@@ -67,7 +67,7 @@ export class AddProduct implements OnInit {
       descriptionEn: [''],
       descriptionAr: [''],
 
-      unit: ['EACH', Validators.required],
+      unit: ['', Validators.required],
       unitSize: [
         null,
         [Validators.required, Validators.min(0.01)]

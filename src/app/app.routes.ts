@@ -8,6 +8,7 @@ import { ProductList } from './features/admin-side/product-list/product-list';
 import { EditProduct } from './features/admin-side/edit-product/edit-product';
 import { BrandList } from './features/admin-side/brand-list/brand-list';
 import { FeatureList } from './features/admin-side/feature-list/feature-list';
+import { EditBrand } from './features/admin-side/edit-brand/edit-brand';
 export const routes: Routes = [
   { path: '', redirectTo: 'admin-side', pathMatch: 'full' },
 
@@ -20,9 +21,11 @@ export const routes: Routes = [
       { path: 'features', component: Feature },
       { path: 'product-list', component: ProductList },
       { path: 'edit-product/:productId', component: EditProduct },
-      {path: 'brand-list',component: BrandList},
-      {path: 'feature-list',component: FeatureList}
+      { path: 'brand-list', component: BrandList },
+      { path: 'feature-list', component: FeatureList },
+      { path: 'edit-brand/:brandId', component: EditBrand },
       
+
     ]
   },
 ];

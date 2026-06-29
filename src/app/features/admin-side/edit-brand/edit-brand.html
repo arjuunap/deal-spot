@@ -1,0 +1,142 @@
+<p>edit-brand works!</p>
+<div class="form-container">
+  <h2>Edit Brand</h2>
+  <p class="form-subtitle">Update brand details and save your changes.</p>
+
+  <form [formGroup]="brandForm" (ngSubmit)="onSubmit()">
+
+    <!-- Brand Name (English) -->
+    <div class="input-group">
+      <label for="nameEn">Brand Name (English)</label>
+      <input type="text" id="nameEn" formControlName="nameEn" placeholder="e.g., Samsung">
+      @if (brandForm.get('nameEn')?.invalid && brandForm.get('nameEn')?.touched) {
+        <span class="field-error">Brand Name is required.</span>
+      }
+    </div>
+
+    <!-- Brand Name (Arabic) -->
+    <div class="input-group rtl-group" dir="rtl">
+      <label for="nameAr">اسم العلامة التجارية (بالعربية)</label>
+      <input type="text" id="nameAr" formControlName="nameAr" placeholder="مثال: سامسونج">
+      @if (brandForm.get('nameAr')?.invalid && brandForm.get('nameAr')?.touched) {
+        <span class="field-error">Brand Name (Arabic) is required.</span>
+      }
+    </div>
+
+    <!-- Description (English) -->
+    <div class="input-group">
+      <label for="descriptionEn">Description (English)</label>
+      <textarea id="descriptionEn" formControlName="descriptionEn" rows="3"
+        placeholder="Enter brand description..."></textarea>
+    </div>
+
+    <!-- Description (Arabic) -->
+    <div class="input-group rtl-group" dir="rtl">
+      <label for="descriptionAr">الوصف (بالعربية)</label>
+      <textarea id="descriptionAr" formControlName="descriptionAr" rows="3"
+        placeholder="أدخل وصف العلامة التجارية..."></textarea>
+    </div>
+
+    <!-- Website URL -->
+    <div class="input-group">
+      <label for="websiteUrl">Website URL</label>
+      <input type="url" id="websiteUrl" formControlName="websiteUrl" placeholder="https://www.samsung.com">
+      @if (brandForm.get('websiteUrl')?.invalid && brandForm.get('websiteUrl')?.touched) {
+        <span class="field-error">Website URL is invalid.</span>
+      }
+    </div>
+
+    <!-- Brand Logo -->
+    <div class="input-group">
+      <label for="logoInput">Brand Logo</label>
+
+      @if (logoPreviewUrl) {
+        <div class="image-preview-wrap">
+          <img [src]="path + logoPreviewUrl" alt="Logo Preview" class="image-preview">
+          @if (selectedLogoFileName) {
+            <span class="file-name-tag">{{ selectedLogoFileName }}</span>
+          }
+          <button type="button" class="remove-image-btn" (click)="removeLogo()">Remove</button>
+        </div>
+      }
+
+      <input #logoInput type="file" id="logoInput" accept="image/*" (change)="onLogoSelected($event)">
+
+      @if (!logoPreviewUrl) {
+        <span class="file-hint">No logo selected.</span>
+      }
+    </div>
+
+    <!-- Brand Banner -->
+    <div class="input-group">
+      <label for="bannerInput">Brand Banner</label>
+
+      @if (bannerPreviewUrl) {
+        <div class="image-preview-wrap">
+          <img [src]="bannerPreviewUrl" alt="Banner Preview" class="image-preview image-preview--banner">
+          @if (selectedBannerFileName) {
+            <span class="file-name-tag">{{ selectedBannerFileName }}</span>
+          }
+          <button type="button" class="remove-image-btn" (click)="removeBanner()">Remove</button>
+        </div>
+      }
+
+      <input #bannerInput type="file" id="bannerInput" accept="image/*" (change)="onBannerSelected($event)">
+
+      @if (!bannerPreviewUrl) {
+        <span class="file-hint">No banner selected.</span>
+      }
+    </div>
+
+    <!-- Categories -->
+    <div class="input-group">
+      <label>Categories</label>
+      <div class="custom-dropdown-container">
+
+        <div class="dropdown-trigger" [class.active]="isCategoryDropdownOpen" (click)="toggleDropdown()">
+          <span>
+            {{ brandForm.get('categoryIds')?.value?.length > 0
+              ? brandForm.get('categoryIds')?.value.length + ' Categories Selected'
+              : 'Select Categories...' }}
+          </span>
+          <span class="arrow" [class.open]="isCategoryDropdownOpen">▼</span>
+        </div>
+
+        @if (isCategoryDropdownOpen) {
+          <div class="dropdown-menu">
+            @for (category of categories; track category.id) {
+              <label class="checkbox-item">
+                <input type="checkbox"
+                  [checked]="brandForm.get('categoryIds')?.value?.includes(category.id)"
+                  (change)="toggleCategory(category.id)">
+                <span class="checkmark"></span>
+                {{ category.nameEn }}
+              </label>
+            }
+          </div>
+        }
+
+      </div>
+      @if (brandForm.get('categoryIds')?.invalid && brandForm.get('categoryIds')?.touched) {
+        <span class="field-error">Select at least one category.</span>
+      }
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button type="submit" class="submit-btn" [disabled]="isSubmitting || brandForm.invalid">
+        {{ isSubmitting ? 'Updating...' : 'Update Brand' }}
+      </button>
+      <button type="button" class="cancel-btn" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+
+  @if (statusMessage) {
+    <div id="statusMessage" [ngClass]="statusType">
+      {{ statusMessage }}
+    </div>
+  }
+</div>

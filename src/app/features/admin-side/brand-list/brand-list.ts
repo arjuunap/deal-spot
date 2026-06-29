@@ -10,13 +10,14 @@ import { environment } from '../../../../environment/environment';
   styleUrl: './brand-list.css',
 })
 export class BrandList {
+
   constructor(
     private brandService: BrandService,
     private cd: ChangeDetectorRef,
     private router: Router
-  ) {}
+  ) { }
   brands: any = [];
-    path: string =  environment.filePath; ;
+  path: string = environment.filePath;;
 
 
   ngOnInit(): void {
@@ -33,8 +34,8 @@ export class BrandList {
         console.error('Error fetching brands:', err);
       }
     });
-  } 
-  addBrand(){
+  }
+  addBrand() {
     this.router.navigate(['/admin-side/brand']);
 
   }
@@ -43,12 +44,25 @@ export class BrandList {
       next: () => {
         console.log('Brand deleted successfully');
         this.fetchBrands();
-        
+
       },
-      error: (err) => { 
+      error: (err) => {
         console.error('Error deleting brand:', err);
       }
     });
   }
-  
+
+  // editBrand(brandId: number):void {
+  //   this.router.navigate(['/admin-side/brand/edit', brandId]);
+  // }
+
+  // onEdit(brandId: number): void {
+  //   this.router.navigate(['/admin-side/edit-product', brandId]);
+  // }
+  onEdit(brandId: number): void {
+    this.router.navigate(['/admin-side/edit-brand', brandId]);
+  }
+
+
+
 }

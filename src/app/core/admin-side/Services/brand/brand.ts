@@ -20,6 +20,14 @@ export class BrandService {
     return this.http.delete(`${this.apiUrl}/delete-brand/${brandId}`);
   }
 
+  getBrandById(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  updateBrand(id: number, brandData: FormData) {
+    return this.http.patch(`${this.apiUrl}/update-brand/${id}`, brandData);
+  }
+
 
   
 }
