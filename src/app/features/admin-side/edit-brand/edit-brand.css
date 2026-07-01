@@ -314,3 +314,10 @@
   background-color: rgba(240, 68, 82, 0.15);
   color: #f56b78;
 }
+
+/* ===== Full-width submit (used when form has no cancel button, e.g. Add Brand) ===== */
+
+.submit-btn.full-width {
+  width: 100%;
+  margin-top: 8px;
+}
