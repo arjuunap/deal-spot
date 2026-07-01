@@ -1,7 +1,20 @@
 <div class="inventory-card">
   <div class="inventory-header">
     <h2 class="inventory-title">Brand list</h2>
-    <button class="btn-add" (click)="addBrand()">+ Add New Brand</button>
+
+    <div class="header-actions">
+      <div class="search-wrapper">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          viewBox="0 0 16 16">
+          <path
+            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+        </svg>
+        <input type="text" class="search-input" placeholder="Search brands..." [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearch()" />
+      </div>
+
+      <button class="btn-add" (click)="addBrand()">+ Add New Brand</button>
+    </div>
   </div>
 
   <div class="table-container">
@@ -18,7 +31,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (brand of brands; track brand.id) {
+        @for (brand of filteredBrands; track brand.id) {
         <tr>
           <td class="font-medium">#{{ brand.id }}</td>
           <td>
@@ -63,7 +76,13 @@
         </tr>
         } @empty {
         <tr>
-          <td colspan="6" class="empty-state">No Brand list.</td>
+          <td colspan="6" class="empty-state">
+            @if (searchTerm) {
+            No brands found for "{{ searchTerm }}".
+            } @else {
+            No Brand list.
+            }
+          </td>
         </tr>
         }
       </tbody>
