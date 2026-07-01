@@ -77,49 +77,43 @@
             <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*">
           </div>
 
-          <img [src]="path+imagePreview">
+          <img [src]="path + imagePreview" alt="Product image preview">
         </div>
 
-        <div class="input-group full-width" style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <label style="margin: 0; font-size: 1.1em; color: #fff;">Product Details (Attributes)</label>
-            <button type="button" (click)="addDetail()"
-              style="padding: 8px 12px; background-color: #2c2c2c; color: #00ff62; border: 1px solid #444; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        <div class="input-group full-width details-section">
+          <div class="details-header">
+            <label>Product Details (Attributes)</label>
+            <button type="button" class="btn-add-detail" (click)="addDetail()">
               + Add Detail
             </button>
           </div>
 
           <div formArrayName="details">
-            <div *ngFor="let detail of details.controls; let i = index" [formGroupName]="i"
-              style="display: flex; gap: 15px; margin-bottom: 12px; align-items: center; background-color: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #333;">
+            <div *ngFor="let detail of details.controls; let i = index" [formGroupName]="i" class="detail-row">
 
-              <select formControlName="attr_key_id"
-                style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: #2c2c2c; color: #fff;">
+              <select formControlName="attr_key_id">
                 <option [ngValue]="null" disabled selected>Select Attribute...</option>
                 <option *ngFor="let attr of allFeatures" [ngValue]="attr.id">{{ attr.attrKeyEn }}</option>
               </select>
 
-              <input type="text" formControlName="valueEn" placeholder="Value (English)"
-                style="flex: 1.5; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: #2c2c2c; color: #fff;">
+              <input type="text" formControlName="valueEn" placeholder="Value (English)">
 
-              <input type="text" formControlName="valueAr" dir="rtl" placeholder="القيمة (بالعربية)"
-                style="flex: 1.5; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: #2c2c2c; color: #fff;">
+              <input type="text" formControlName="valueAr" dir="rtl" placeholder="القيمة (بالعربية)">
 
-              <button type="button" (click)="removeDetail(i)" title="Remove"
-                style="background: none; border: none; color: #ff5555; font-size: 24px; cursor: pointer; padding: 0 5px; line-height: 1;">
+              <button type="button" class="btn-remove-detail" (click)="removeDetail(i)" title="Remove">
                 &times;
               </button>
             </div>
           </div>
 
-          <div *ngIf="details.length === 0" style="color: #888; font-size: 0.9em; padding: 10px 0;">
+          <div *ngIf="details.length === 0" class="details-empty">
             No attributes added. Click "+ Add Detail" to specify specs like RAM, Color, etc.
           </div>
         </div>
 
       </div>
 
-      <div class="form-actions" style="margin-top: 30px;">
+      <div class="form-actions">
         <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
         <button type="submit" class="btn-submit" [disabled]="productForm.invalid">Update Product</button>
       </div>

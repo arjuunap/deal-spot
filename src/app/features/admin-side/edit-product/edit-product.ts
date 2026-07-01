@@ -326,6 +326,6 @@ export class EditProduct implements OnInit {
 
   onCancel(): void {
     // Navigate back to the product list or previous page
-    this.router.navigate(['/admin/products']);
+    this.router.navigate(['/admin-side/product-list']);
   }
 }
