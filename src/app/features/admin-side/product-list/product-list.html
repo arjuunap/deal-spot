@@ -1,19 +1,25 @@
 <div class="list-container">
   <div class="header-actions">
+    <input 
+    type="text" 
+    class="search-input" 
+    placeholder="Search by name..." 
+    (input)="onSearch($event)"
+  />
     <h2>Product Inventory</h2>
-    <button *ngIf="!hideAddButton" class="btn-add" routerLink="/admin/products/add">+ Add New Product</button>
+    <button (click)="goToAddProduct()" *ngIf="!hideAddButton" class="btn-add" >+ Add New Product</button>
   </div>
 
   <div class="loading-state" *ngIf="isLoading">
     <p>Loading products...</p>
   </div>
 
-  <div class="empty-state" *ngIf="!isLoading && products.length === 0">
-    <p>No products found. Start by adding a new one!</p>
-  </div>
+  <div class="empty-state" *ngIf="!isLoading && filteredProducts.length === 0">
+  <p>No products found. Start by adding a new one!</p>
+</div>
 
-  <div class="table-responsive" *ngIf="!isLoading && products.length > 0">
-    <table class="data-table">
+  <div class="table-responsive" *ngIf="!isLoading && filteredProducts.length > 0">
+  <table class="data-table">
       <thead>
         <tr>
           <th>ID</th>
@@ -27,8 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products">
-          <td>#{{ product.id }}</td>
+<tr *ngFor="let product of filteredProducts">          <td>#{{ product.id }}</td>
           <td>
             <ng-container *ngIf="product.images?.length > 0 && product.images[0]?.imageUrl; else noImage">
               <img [src]="path + product.images[0].imageUrl" alt="Product Image" class="product-img" />

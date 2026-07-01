@@ -15,7 +15,9 @@ import { environment } from '../../../../environment/environment';
 export class ProductList implements OnInit {
   products: any[] = [];
   isLoading: boolean = true;
-  path: string =  environment.filePath; ;
+  path: string =  environment.filePath;
+  allProducts: any[] = [];      // The full list from API
+filteredProducts: any[] = []; // The list shown in UI
 
     @Input() hideAddButton = false;
 
@@ -36,7 +38,8 @@ export class ProductList implements OnInit {
     this.isLoading = true;
     this.productService.getProducts().subscribe({
       next: (data: any) => {
-        this.products = data;
+        this.allProducts = data; 
+        this.filteredProducts = data; 
         console.log('Products fetched successfully:', this.products);
         this.isLoading = false;
         this.cd.detectChanges();
@@ -95,4 +98,20 @@ onEdit(productId: number): void {
   //     }
   //   });
   // }
+
+  onSearch(event: Event): void {
+  const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
+  
+  if (!searchTerm) {
+    this.filteredProducts = [...this.allProducts];
+  } else {
+    this.filteredProducts = this.allProducts.filter(product => 
+      product.nameEn.toLowerCase().includes(searchTerm) || 
+      product.nameAr.toLowerCase().includes(searchTerm)
+    );
+  }
+}
+goToAddProduct(){
+  this.router.navigate(['/admin-side/add-product'])
+}
 }
