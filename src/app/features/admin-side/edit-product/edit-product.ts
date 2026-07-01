@@ -32,6 +32,8 @@ export class EditProduct implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   productForm!: FormGroup;
   productId!: number;
+  previewUrl: string | null = null;
+  path: string = environment.filePath;
 
   productUnits = [
     'EACH', 'KG', 'GRAM', 'LITRE', 'ML', 'PACK', 'BOX', 'PAIR', 'SET'
@@ -40,13 +42,8 @@ export class EditProduct implements OnInit {
   allCategories: any[] = [];
   parentCategories: any[] = [];
   childCategories: any[] = [];
-
   allFeatures: Feature[] = [];
   brands: any = [];
-  id: string = ''
-  imagePreview: any;
-    path: string =  environment.filePath; ;
-
 
   constructor(
     private fb: FormBuilder,
@@ -55,14 +52,10 @@ export class EditProduct implements OnInit {
     private brandService: BrandService,
     private cd: ChangeDetectorRef,
     private router: Router,
-    private route: ActivatedRoute // Added ActivatedRoute to get the product ID
-
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    const productId = this.route.snapshot.paramMap.get('productId');
-
-    console.log(productId);
     this.productForm = this.fb.group({
       parentCategoryId: [null, Validators.required],
       categoryId: [null, Validators.required],
@@ -77,17 +70,14 @@ export class EditProduct implements OnInit {
       details: this.fb.array([])
     });
 
-    this.productForm
-      .get('parentCategoryId')
-      ?.valueChanges.subscribe(parentId => {
-        this.onParentCategoryChange(parentId);
-      });
+    this.productForm.get('parentCategoryId')?.valueChanges.subscribe(parentId => {
+      this.onParentCategoryChange(parentId);
+    });
 
     this.fetchCategories();
     this.fetchFeatures();
     this.fetchBrands();
 
-    // Fetch the product ID from the route and load existing data
     this.route.paramMap.subscribe(params => {
       const id = params.get('productId');
       if (id) {
@@ -98,21 +88,17 @@ export class EditProduct implements OnInit {
   }
 
   loadProductData(id: number): void {
-    // Note: Ensure getProductById exists in your ProductService
     this.productService.getProductById(id).subscribe({
       next: (product: any) => {
-        console.log('Fetched product:', product);
-        this.imagePreview = product.images[0].imageUrl
-        console.log(this.imagePreview)
+        if (product.images && product.images.length > 0) {
+          this.previewUrl = this.path + product.images[0].imageUrl;
+        }
 
-
-        // Populate child categories if parent category exists
         if (product.parentCategoryId) {
           this.onParentCategoryChange(product.parentCategoryId);
         }
 
-        // Patch the standard form controls
-        this.productForm.patchValue({  
+        this.productForm.patchValue({
           parentCategoryId: product.parentCategoryId,
           categoryId: product.categoryId,
           nameEn: product.nameEn,
@@ -121,24 +107,17 @@ export class EditProduct implements OnInit {
           descriptionEn: product.descriptionEn,
           descriptionAr: product.descriptionAr,
           unit: product.unit,
-          unitSize: product.unitSize,
-
-
-
+          unitSize: product.unitSize
         });
 
-        // Clear existing empty details and populate with fetched details
         this.details.clear();
-        if (product.details && product.details.length > 0) {
-          product.details.forEach((detail: any) => {
-            this.details.push(this.fb.group({
-              // Fallbacks used depending on your backend GET response property names
-              attr_key_id: [detail.attributeKeyId || detail.attr_key_id, Validators.required],
-              valueEn: [detail.attrValueEn || detail.valueEn, Validators.required],
-              valueAr: [detail.attrValueAr || detail.valueAr, Validators.required]
-            }));
-          });
-        }
+        product.details?.forEach((detail: any) => {
+          this.details.push(this.fb.group({
+            attr_key_id: [detail.attr_key_id || detail.attributeKeyId, Validators.required],
+            valueEn: [detail.valueEn || detail.attrValueEn, Validators.required],
+            valueAr: [detail.valueAr || detail.attrValueAr, Validators.required]
+          }));
+        });
       },
       error: (err) => {
         console.error('Error loading product details', err);
@@ -148,118 +127,81 @@ export class EditProduct implements OnInit {
   }
 
   fetchBrands(): void {
-    this.brandService.getBrands().subscribe({
-      next: (data) => {
-        this.brands = data;
-        this.cd.detectChanges();
-      }
+    this.brandService.getBrands().subscribe(data => {
+      this.brands = data;
+      this.cd.detectChanges();
     });
   }
 
-  // =========================
-  // DETAILS FORM ARRAY
-  // =========================
+  fetchCategories(): void {
+    this.categoryService.getCategories().subscribe((data: any) => {
+      this.allCategories = data;
+      this.parentCategories = this.allCategories.filter(cat => !cat.parentId);
+    });
+  }
 
+  onParentCategoryChange(parentId: any): void {
+    const categoryIdControl = this.productForm.get('categoryId');
+    if (this.productForm.value.parentCategoryId !== parentId) {
+      categoryIdControl?.setValue(null);
+    }
+    this.childCategories = parentId ? this.allCategories.filter(cat => cat.parentId == parentId) : [];
+    if (this.childCategories.length > 0) {
+      categoryIdControl?.setValidators([Validators.required]);
+    } else {
+      categoryIdControl?.clearValidators();
+    }
+    categoryIdControl?.updateValueAndValidity();
+  }
+
+  fetchFeatures(): void {
+    this.productService.getFeatures().subscribe((data: Feature[]) => {
+      this.allFeatures = data;
+    });
+  }
+
+  // --- Image Handling ---
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // 1. Update the form control with the new file
+    this.productForm.patchValue({ primaryImage: file });
+
+    // 2. Use FileReader to generate a data URL for immediate preview
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      // This immediately replaces the old image URL in the UI
+      this.previewUrl = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearImage(event: Event): void {
+    event.preventDefault();
+    this.previewUrl = null;
+    this.productForm.patchValue({ primaryImage: null });
+    this.fileInput.nativeElement.value = '';
+  }
+
+  // --- Details Array Handling ---
   get details(): FormArray {
     return this.productForm.get('details') as FormArray;
   }
 
-  createDetailGroup(): FormGroup {
-    return this.fb.group({
+  addDetail(): void {
+    this.details.push(this.fb.group({
       attr_key_id: [null, Validators.required],
       valueEn: ['', Validators.required],
       valueAr: ['', Validators.required]
-    });
-  }
-
-  addDetail(): void {
-    this.details.push(this.createDetailGroup());
+    }));
   }
 
   removeDetail(index: number): void {
     this.details.removeAt(index);
   }
 
-  // =========================
-  // CATEGORY METHODS
-  // =========================
-
-  fetchCategories(): void {
-    this.categoryService.getCategories().subscribe({
-      next: (data: any) => {
-        this.allCategories = data;
-        this.parentCategories = this.allCategories.filter(
-          cat => cat.parentId === null || cat.parentId === undefined
-        );
-      },
-      error: err => {
-        console.error('Error loading categories', err);
-      }
-    });
-  }
-
-  onParentCategoryChange(parentId: any): void {
-    const categoryIdControl = this.productForm.get('categoryId');
-
-    // Only clear if the parentId actually changes to a different value to avoid wiping data during initialization patch
-    if (this.productForm.value.parentCategoryId !== parentId) {
-      categoryIdControl?.setValue(null);
-    }
-
-    if (parentId) {
-      this.childCategories = this.allCategories.filter(
-        cat => cat.parentId == parentId
-      );
-      if (this.childCategories.length > 0) {
-        categoryIdControl?.setValidators([Validators.required]);
-      } else {
-        categoryIdControl?.clearValidators();
-      }
-    } else {
-      this.childCategories = [];
-      categoryIdControl?.clearValidators();
-    }
-    categoryIdControl?.updateValueAndValidity();
-  }
-
-  // =========================
-  // FEATURES / ATTRIBUTES
-  // =========================
-
-  fetchFeatures(): void {
-    this.productService.getFeatures().subscribe({
-      next: (data: Feature[]) => {
-        this.allFeatures = data;
-      },
-      error: err => {
-        console.error('Error fetching features:', err);
-      }
-    });
-  }
-
-  // =========================
-  // FILE UPLOAD
-  // =========================
-
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5 MB');
-      return;
-    }
-
-    this.productForm.patchValue({
-      primaryImage: file
-    });
-  }
-
-  // =========================
-  // SUBMIT
-  // =========================
-
+  // --- Submission ---
   onSubmit(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
@@ -267,7 +209,6 @@ export class EditProduct implements OnInit {
     }
 
     const formValue = this.productForm.value;
-
     const product = {
       parentCategoryId: Number(formValue.parentCategoryId),
       categoryId: formValue.categoryId ? Number(formValue.categoryId) : null,
@@ -286,46 +227,22 @@ export class EditProduct implements OnInit {
     };
 
     const formData = new FormData();
-
-    formData.append(
-      'data',
-      new Blob([JSON.stringify(product)], { type: 'application/json' })
-    );
-
+    formData.append('data', new Blob([JSON.stringify(product)], { type: 'application/json' }));
     if (formValue.primaryImage) {
       formData.append('file', formValue.primaryImage);
     }
 
-    // Note: Ensure updateProduct exists in your ProductService
     this.productService.updateProduct(this.productId, formData).subscribe({
-      next: (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Updated!',
-          text: 'Product updated successfully.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        console.log('res', res)
-
-
+      next: () => {
+        Swal.fire({ icon: 'success', title: 'Updated!', text: 'Product updated successfully.', timer: 2000 });
       },
       error: (error) => {
-        console.error('Error updating product:', error);
-        const backendErrorMessage = error?.error?.message || error?.message || 'Failed to update product.';
-
-        Swal.fire({
-          icon: 'error',
-          title: 'Update Failed',
-          text: backendErrorMessage,
-          confirmButtonColor: '#d33'
-        });
+        Swal.fire({ icon: 'error', title: 'Update Failed', text: error?.error?.message || 'Failed to update product.' });
       }
     });
   }
 
   onCancel(): void {
-    // Navigate back to the product list or previous page
     this.router.navigate(['/admin-side/product-list']);
   }
 }
