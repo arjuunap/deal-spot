@@ -32,7 +32,7 @@ export class Category implements OnInit {
     this.categoryForm = this.fb.group({
       nameEn: ['', Validators.required],
       nameAr: ['', Validators.required],
-      iconslug: ['', Validators.required],
+      iconslug: [''],
 
       sortOrder: [0, Validators.min(0)],
       parentId: [''], 

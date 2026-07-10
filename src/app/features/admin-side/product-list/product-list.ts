@@ -99,17 +99,19 @@ onEdit(productId: number): void {
   //   });
   // }
 
-  onSearch(event: Event): void {
-  const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
-  
+ onSearch(event: Event): void {
+  const searchTerm = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
   if (!searchTerm) {
     this.filteredProducts = [...this.allProducts];
-  } else {
-    this.filteredProducts = this.allProducts.filter(product => 
-      product.nameEn.toLowerCase().includes(searchTerm) || 
-      product.nameAr.toLowerCase().includes(searchTerm)
-    );
+    return;
   }
+
+  this.filteredProducts = this.allProducts.filter(product =>
+    product.nameEn?.toLowerCase().includes(searchTerm) ||
+    product.nameAr?.toLowerCase().includes(searchTerm) ||
+    product.brand?.toLowerCase().includes(searchTerm)
+  );
 }
 goToAddProduct(){
   this.router.navigate(['/admin-side/add-product'])
